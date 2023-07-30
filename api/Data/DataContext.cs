@@ -5,12 +5,13 @@ namespace api.Data
 {
     public class DataContext : DbContext
     {
+        public virtual DbSet<Client> Clients { get; set; }
+
         public DataContext(DbContextOptions<DataContext> options)
             : base(options)
         {
+            
         }
-
-        public DbSet<Client> Clients { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
