@@ -5,7 +5,7 @@ namespace api.Models
     {
         public Client() { }
 
-        public Client(string id, string firstName, string lastName, string email, string phoneNumber)
+        public Client(Guid id, string firstName, string lastName, string email, string phoneNumber)
         {
             Id = id;
             FirstName = firstName;
@@ -14,7 +14,7 @@ namespace api.Models
             PhoneNumber = phoneNumber;
         }
 
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         public string FirstName { get; set; }
 

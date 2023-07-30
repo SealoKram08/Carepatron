@@ -1,12 +1,9 @@
-﻿using System;
-namespace api.Repositories
-{
-    public interface IDocumentRepository
-    {
-        Task SyncDocumentsFromExternalSource(string email);
-    }
+using System;
+using api.Services.IServices;
 
-    public class DocumentRepository : IDocumentRepository
+namespace api.Services
+{
+    public class DocumentServices : IDocumentServices
     {
         public async Task SyncDocumentsFromExternalSource(string _)
         {

@@ -1,63 +1,60 @@
-﻿using api.Data;
+using api.Data;
 using api.Models;
+using api.Repositories.IRepositories;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 
-namespace api.Repositories
-{
-    public interface IClientRepository
-    {
-        Task<Client[]> Get();
-        Task Create(Client client);
-        Task Update(Client client);
-    }
+namespace api.Repositories {
+    public class ClientRepository: GenericRepository<Client>, IClientRepository {
 
-    public class ClientRepository : IClientRepository
-    {
-        private readonly DataContext dataContext;
-        private readonly IEmailRepository emailRepository;
-        private readonly IDocumentRepository documentRepository;
-
-        public ClientRepository(DataContext dataContext, IEmailRepository emailRepository, IDocumentRepository documentRepository)
+        public ClientRepository(
+            DataContext dataContext,
+            ILogger logger): base(dataContext, logger)
         {
-            this.dataContext = dataContext;
-            this.emailRepository = emailRepository;
-            this.documentRepository = documentRepository;
+
         }
 
-        public async Task Create(Client client)
+        public override async Task<bool> Update(Client entity)
         {
-            await dataContext.AddAsync(client);
-            await dataContext.SaveChangesAsync();
+            var result = false;
+            
+            try {
 
-            await emailRepository.Send(client.Email, "Hi there - welcome to my Carepatron portal.");
-            await documentRepository.SyncDocumentsFromExternalSource(client.Email);
-        }
+                var existingClient = await dbSet.Where(a => a.Id == entity.Id).FirstOrDefaultAsync();
 
-        public Task<Client[]> Get()
-        {
-            return dataContext.Clients.ToArrayAsync();
-        }
-
-        public async Task Update(Client client)
-        {
-            var existingClient = await dataContext.Clients.FirstOrDefaultAsync(x => x.Id == client.Id);
-
-            if (existingClient == null)
-                return;
-
-            if (existingClient.Email != client.Email)
+                if (existingClient != null) {
+                    existingClient.FirstName = entity.FirstName;
+                    existingClient.LastName = entity.LastName;
+                    existingClient.PhoneNumber = entity.PhoneNumber;
+                    existingClient.Email = entity.Email;
+                    
+                    result = true;
+                }
+            }
+            catch (Exception ex) 
             {
-                await emailRepository.Send(client.Email, "Hi there - welcome to my Carepatron portal.");
-                await documentRepository.SyncDocumentsFromExternalSource(client.Email);
+                _logger.LogError(ex, "Error on class {Repo} ", typeof(ClientRepository));
             }
 
-            existingClient.FirstName = client.FirstName;
-            existingClient.LastName = client.LastName;
-            existingClient.Email = client.Email;
-            existingClient.PhoneNumber = client.PhoneNumber;
+            return result;
+        }
 
-            await dataContext.SaveChangesAsync();
+        public async Task<IEnumerable<Client>> GetByName(string name)
+        {
+            List<Client> clients = new();
+
+            try {
+
+                await Task.Run(() => {
+                    clients =  dbSet.Where(cl => string.Compare(cl.FirstName, name, true) == 0 || string.Compare(cl.LastName, name, true) == 0).ToList();
+                });
+
+            } catch (Exception ex) 
+            {
+                _logger.LogError(ex, "Error on class {Repo} ", typeof(ClientRepository));
+            }
+
+            return clients;
         }
     }
 }
-

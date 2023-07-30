@@ -1,6 +1,8 @@
 ﻿using api.Data;
-using api.Repositories;
+using api.Services;
+using api.Repositories.IConfiguration;
 using Microsoft.EntityFrameworkCore;
+using api.Services.IServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,11 +27,18 @@ services.AddCors(options =>
 
 // ioc
 services.AddDbContext<DataContext>(options => options.UseInMemoryDatabase(databaseName: "Test"));
-
 services.AddScoped<DataSeeder>();
-services.AddScoped<IClientRepository, ClientRepository>();
-services.AddScoped<IEmailRepository, EmailRepository>();
-services.AddScoped<IDocumentRepository, DocumentRepository>();
+
+services.AddControllers();
+
+//DTO Automapper
+services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+//DI unit of work and services.
+services.AddScoped<IUnitOfWork, UnitOfWork>();
+services.AddScoped<IClientServices, ClientServices>();
+services.AddScoped<IDocumentServices, DocumentServices>();
+services.AddScoped<IEmailServices, EmailServices>();
 
 var app = builder.Build();
 
@@ -41,12 +50,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/clients", async (IClientRepository clientRepository) =>
-{
-    return await clientRepository.Get();
-})
-.WithName("get clients");
-
+app.MapControllers();
 app.UseCors();
 
 // seed data
