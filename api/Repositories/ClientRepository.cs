@@ -41,12 +41,12 @@ namespace api.Repositories {
 
         public async Task<IEnumerable<Client>> GetByName(string name)
         {
-            List<Client> clients = new();
+            IQueryable<Client> clients = null;
 
             try {
 
                 await Task.Run(() => {
-                    clients =  dbSet.Where(cl => string.Compare(cl.FirstName, name, true) == 0 || string.Compare(cl.LastName, name, true) == 0).ToList();
+                    clients =  dbSet.Where(cl => string.Compare(cl.FirstName, name, true) == 0 || string.Compare(cl.LastName, name, true) == 0);
                 });
 
             } catch (Exception ex) 

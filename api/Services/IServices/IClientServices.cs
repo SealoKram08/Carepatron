@@ -9,6 +9,6 @@ namespace api.Services.IServices
         Task<List<Client>> GetAll();
         Task<bool> Create(ClientDto client);
         Task<bool> Update(ClientDto client);
-        Task<IEnumerable<Client>> SearchByName(string name);
+        Task<List<Client>> SearchByName(string name);
     }
 }

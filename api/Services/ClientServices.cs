@@ -99,7 +99,7 @@ namespace api.Services {
            return clients.ToList();
         }
 
-        public async Task<IEnumerable<Client>> SearchByName(string name)
+        public async Task<List<Client>> SearchByName(string name)
         {
             var clients = await _unitOfWork.ClientRepository.GetByName(name);
 
