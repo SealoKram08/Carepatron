@@ -1,11 +1,11 @@
 # [Visit the wiki](https://github.com/Carepatron/Carepatron-Test-Full/wiki)
 
-#In new terminal Go to /api/
-dotnet restore
-dotnet build
-dotnet run
+# In new terminal Go to /api/
+⋅⋅* dotnet restore
+⋅⋅* dotnet build
+⋅⋅* dotnet run
 
-#Requirements
+# Requirements
 
 1. Create a client
 ⋅⋅* All fields are required
