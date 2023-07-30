@@ -1,5 +1,3 @@
-# [Visit the wiki](https://github.com/Carepatron/Carepatron-Test-Full/wiki)
-
 # In new terminal Go to /api/
 ⋅⋅* dotnet restore
 
